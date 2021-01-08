@@ -1,83 +1,99 @@
-const { v4: uuid } = require('uuid');
-const fs = require('fs')
-const path = require('path')
+const {Schema, model} = require('mongoose');
 
-class Course {
-  constructor(title, price, img) {
-    this.title = title
-    this.price = price
-    this.img = img
-    this.id = uuid()
-  }
+const course = new Schema({
+  title: {
+    type: String,
+    required: true
+  },
+  price: {
+    type: Number,
+    required: true
+  },
+  img: String
+})
 
-  toJSON() {
-    return {
-      title: this.title,
-      price: this.price,
-      img: this.img,
-      id: this.id
-    }
-  }
+module.exports = model('Course', course)
 
-  async save() {
-    const courses = await Course.getAll()
-    courses.push(this.toJSON())
+// const { v4: uuid } = require('uuid');
+// const fs = require('fs')
+// const path = require('path')
 
-    return new Promise((resolve, reject) => {
-      fs.writeFile(
-        path.join(__dirname, '..', 'data', 'courses.json'),
-        JSON.stringify(courses),
-        (err) => {
-          if (err) {
-            reject(err)
-          } else {
-            resolve()
-          }
-        }
-      )
-    })
-  }
+// class Course {
+//   constructor(title, price, img) {
+//     this.title = title
+//     this.price = price
+//     this.img = img
+//     this.id = uuid()
+//   }
 
-  static getAll() {
-    return new Promise((resolve, reject) => {
-      fs.readFile(
-        path.join(__dirname, '..', 'data', 'courses.json'),
-        'utf-8',
-        (err, content) => {
-          if (err) {
-            reject(err)
-          } else {
-            resolve(JSON.parse(content))
-          }
-        }
-      )
-    })
-  }
+//   toJSON() {
+//     return {
+//       title: this.title,
+//       price: this.price,
+//       img: this.img,
+//       id: this.id
+//     }
+//   }
 
-  static async getById(id) {
-    const courses = await Course.getAll();
-    return courses.find(c => c.id === id);
-  }
+//   async save() {
+//     const courses = await Course.getAll()
+//     courses.push(this.toJSON())
 
-  static async update(course) {
-    const courses = await Course.getAll();
-    const idx = courses.findIndex(c => c.id === course.id);
-    courses[idx] = course;
+//     return new Promise((resolve, reject) => {
+//       fs.writeFile(
+//         path.join(__dirname, '..', 'data', 'courses.json'),
+//         JSON.stringify(courses),
+//         (err) => {
+//           if (err) {
+//             reject(err)
+//           } else {
+//             resolve()
+//           }
+//         }
+//       )
+//     })
+//   }
 
-    return new Promise((resolve, reject) => {
-      fs.writeFile(
-        path.join(__dirname, '..', 'data', 'courses.json'),
-        JSON.stringify(courses),
-        (err) => {
-          if (err) {
-            reject(err)
-          } else {
-            resolve()
-          }
-        }
-      )
-    })
-  }
-}
+//   static getAll() {
+//     return new Promise((resolve, reject) => {
+//       fs.readFile(
+//         path.join(__dirname, '..', 'data', 'courses.json'),
+//         'utf-8',
+//         (err, content) => {
+//           if (err) {
+//             reject(err)
+//           } else {
+//             resolve(JSON.parse(content))
+//           }
+//         }
+//       )
+//     })
+//   }
 
-module.exports = Course
+//   static async getById(id) {
+//     const courses = await Course.getAll();
+//     return courses.find(c => c.id === id);
+//   }
+
+//   static async update(course) {
+//     const courses = await Course.getAll();
+//     const idx = courses.findIndex(c => c.id === course.id);
+//     courses[idx] = course;
+
+//     return new Promise((resolve, reject) => {
+//       fs.writeFile(
+//         path.join(__dirname, '..', 'data', 'courses.json'),
+//         JSON.stringify(courses),
+//         (err) => {
+//           if (err) {
+//             reject(err)
+//           } else {
+//             resolve()
+//           }
+//         }
+//       )
+//     })
+//   }
+// }
+
+// module.exports = Course

@@ -29,7 +29,7 @@ app.use('/card', cardRoutes);
 const PORT = process.env.PORT || 3000;
 async function start() {
     try {
-        const url = 'mongodb+srv://sf-st:gt6DP171IDtdFFRG@cluster0.rp1es.mongodb.net/test?retryWrites=true&w=majority';
+        const url = 'mongodb+srv://sf-st:gt6DP171IDtdFFRG@cluster0.rp1es.mongodb.net/courses_test';
         await mongoose.connect(url, {
             useUnifiedTopology: true,
             useNewUrlParser: true
