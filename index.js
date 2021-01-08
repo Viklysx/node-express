@@ -1,5 +1,5 @@
 const Handlebars = require('handlebars')
-const {allowInsecurePrototypeAccess} = require('@handlebars/allow-prototype-access')
+const {allowInsecurePrototypeAccess} = require('@handlebars/allow-prototype-access');
 
 const express = require('express');
 const app = express();
@@ -36,7 +36,8 @@ async function start() {
         const url = 'mongodb+srv://sf-st:gt6DP171IDtdFFRG@cluster0.rp1es.mongodb.net/courses_test';
         await mongoose.connect(url, {
             useUnifiedTopology: true,
-            useNewUrlParser: true
+            useNewUrlParser: true,
+            useFindAndModify: false
         });
         app.listen(PORT, () => {
             console.log('Start on port ' + PORT);
