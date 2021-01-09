@@ -14,7 +14,8 @@ const coursesRoutes = require('./routes/courses');
 const ordersRoutes = require('./routes/orders');
 const authRoutes = require('./routes/auth');
 const mongoose = require('mongoose');
-const varMiddleware = require('./middleware/variables')
+const varMiddleware = require('./middleware/variables');
+const userMiddleware = require('./middleware/user')
 
 const User = require('./models/user');
 
@@ -39,13 +40,16 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.urlencoded({
     extended: true
 }));
+
 app.use(session({
     secret: 'some secret value',
     resave: false,
     saveUninitialized: false,
     store
 }));
+
 app.use(varMiddleware);
+app.use(userMiddleware);
 
 app.use('/', homeRoutes);
 app.use('/add', addRoutes);
