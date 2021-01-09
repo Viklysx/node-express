@@ -1,6 +1,6 @@
 const Handlebars = require('handlebars')
 const {allowInsecurePrototypeAccess} = require('@handlebars/allow-prototype-access');
-
+const csrf = require('csurf');
 const express = require('express');
 const app = express();
 const path = require('path');
@@ -48,6 +48,7 @@ app.use(session({
     store
 }));
 
+app.use(csrf());
 app.use(varMiddleware);
 app.use(userMiddleware);
 
