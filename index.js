@@ -4,7 +4,8 @@ const {allowInsecurePrototypeAccess} = require('@handlebars/allow-prototype-acce
 const express = require('express');
 const app = express();
 const path = require('path');
-const session = require('express-session')
+const session = require('express-session');
+const MongoStore = require('connect-mongodb-session')(session);
 const exphbs = require('express-handlebars');
 const homeRoutes = require('./routes/home');
 const cardRoutes = require('./routes/card');
@@ -17,25 +18,22 @@ const varMiddleware = require('./middleware/variables')
 
 const User = require('./models/user');
 
+const MONGODB_URI = 'mongodb+srv://sf-st:gt6DP171IDtdFFRG@cluster0.rp1es.mongodb.net/courses_test';
+
 const hbs = exphbs.create({
     defaultLayout: 'main', 
     extname: 'hbs',
     handlebars: allowInsecurePrototypeAccess(Handlebars)
   });
 
+const store = new MongoStore({
+    collection: 'sessions', // таблица в БД, где будем хранить все сессии
+    uri: MONGODB_URI
+})
+
 app.engine('hbs', hbs.engine);
 app.set('view engine', 'hbs');
 app.set('views', 'views'); // указали папку, где хранятся шаблоны
-
-app.use(async (req, res, next) => {
-    try {
-        const user = await User.findById('5ff8c8af84913f2df0d1db95');
-        req.user = user;
-        next();
-    } catch (e) {
-        console.log(e)
-    }   
-})
 
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.urlencoded({
@@ -44,7 +42,8 @@ app.use(express.urlencoded({
 app.use(session({
     secret: 'some secret value',
     resave: false,
-    saveUninitialized: false
+    saveUninitialized: false,
+    store
 }));
 app.use(varMiddleware);
 
@@ -58,21 +57,13 @@ app.use('/auth', authRoutes);
 const PORT = process.env.PORT || 3000;
 async function start() {
     try {
-        const url = 'mongodb+srv://sf-st:gt6DP171IDtdFFRG@cluster0.rp1es.mongodb.net/courses_test';
-        await mongoose.connect(url, {
+        
+        await mongoose.connect(MONGODB_URI, {
             useUnifiedTopology: true,
             useNewUrlParser: true,
             useFindAndModify: false
         });
-        const candidate = await User.findOne(); // если хотя бы один пользователь уже есть, то метод вернет данные
-        if (!candidate) {
-            const user = new User({
-                email: 'vikl@mail.ru',
-                name: 'Vika',
-                cart: {items: []}
-            })
-            await user.save();
-        }
+        
         app.listen(PORT, () => {
             console.log('Start on port ' + PORT);
         });
