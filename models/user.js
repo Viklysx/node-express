@@ -1,18 +1,22 @@
-const {Schema, model} = require('mongoose');
+const {
+    Schema,
+    model
+} = require('mongoose');
 
 const userSchema = new Schema({
-  email: {
-      type: String,
-      required: true
-  },
-  name: String,
-  password: {
-    type: String,
-    required: true
-},
-  cart: {
-      items: [
-          {
+    email: {
+        type: String,
+        required: true
+    },
+    name: String,
+    password: {
+        type: String,
+        required: true
+    },
+    resetToken: String,
+    resetTokenExp: Date, // время жизни токена
+    cart: {
+        items: [{
             count: {
                 type: Number,
                 required: true,
@@ -23,12 +27,11 @@ const userSchema = new Schema({
                 ref: 'Course',
                 required: true
             }
-          }        
-      ]
-  }
+        }]
+    }
 })
 
-userSchema.methods.addToCart = function(course) {
+userSchema.methods.addToCart = function (course) {
     const items = [...this.cart.items]; // склонировали массив
     const idx = items.findIndex(c => { // когда курс уже есть в корзине
         return c.courseId.toString() === course._id.toString()
@@ -43,28 +46,34 @@ userSchema.methods.addToCart = function(course) {
         })
     }
 
-    this.cart = {items};
+    this.cart = {
+        items
+    };
     return this.save();
 }
 
-userSchema.methods.removeFromCart = function(id) {
+userSchema.methods.removeFromCart = function (id) {
     let items = [...this.cart.items]; // склонировали массив
     const idx = items.findIndex(c => { // когда курс уже есть в корзине
         return c.courseId.toString() === id.toString()
     })
 
-    if (items[idx].count === 1) {// всего один курс в корзине
+    if (items[idx].count === 1) { // всего один курс в корзине
         items = items.filter(c => c.courseId.toString() !== id.toString()) // удаляем элемент из корзины
     } else {
         items[idx].count--;
     }
 
-    this.cart = {items};
+    this.cart = {
+        items
+    };
     return this.save();
 }
 
-userSchema.methods.clearCart = function() {
-    this.cart = {items: []};
+userSchema.methods.clearCart = function () {
+    this.cart = {
+        items: []
+    };
     return this.save();
 }
 
