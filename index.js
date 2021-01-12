@@ -24,7 +24,8 @@ const User = require('./models/user');
 const hbs = exphbs.create({
     defaultLayout: 'main', 
     extname: 'hbs',
-    handlebars: allowInsecurePrototypeAccess(Handlebars)
+    handlebars: allowInsecurePrototypeAccess(Handlebars),
+    helpers: require('./utils/hbs-helpers') // созданная новая функция, которую можно использовать в шаблоне
   });
 
 const store = new MongoStore({
