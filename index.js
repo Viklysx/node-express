@@ -18,7 +18,7 @@ const mongoose = require('mongoose');
 const varMiddleware = require('./middleware/variables');
 const userMiddleware = require('./middleware/user');
 const keys = require('./keys/index')
-
+const errorHandler = require('./middleware/error')
 const User = require('./models/user');
 
 const hbs = exphbs.create({
@@ -60,6 +60,7 @@ app.use('/courses', coursesRoutes);
 app.use('/card', cardRoutes);
 app.use('/orders', ordersRoutes);
 app.use('/auth', authRoutes);
+app.use(errorHandler); // важно чтобы это было последним, иначе некоторые роуты могут быть недоступны
 
 const PORT = process.env.PORT || 3000;
 async function start() {
