@@ -4,6 +4,7 @@ const {
 const router = Router();
 const User = require('../models/user');
 const bcrypt = require('bcryptjs');
+const {body, validationResult} = require('express-validator'); // будем валидировать конкретно body, validationResult - с поомщью нее будем получать ошибки (если они есть)
 const nodemailer = require('nodemailer');
 const sendgrid = require('nodemailer-sendgrid-transport');
 const keys = require('../keys');
@@ -64,17 +65,22 @@ router.post('/login', async (req, res) => {
     }
 })
 
-router.post('/register', async (req, res) => {
+router.post('/register', body('email').isEmail(), async (req, res) => { // body() - для валидации
     try {
         const {
             email,
             password,
-            repeat,
+            confirm,
             name
         } = req.body;
         const candidate = await User.findOne({
             email
         });
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) { 
+            req.flash('registerError', errors.array()[0].msg);
+            return res.status(422).redirect('/auth/login#register') // статус ошибок валидации
+        }
         if (candidate) {
             req.flash('registerError', 'Пользователь уже существует');
             res.redirect('/auth/login#register')
