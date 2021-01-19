@@ -20,6 +20,8 @@ const userMiddleware = require('./middleware/user');
 const keys = require('./keys/index')
 const errorHandler = require('./middleware/error')
 const User = require('./models/user');
+const profileRoutes = require('./routes/profile');
+const fileMiddleware = require('./middleware/file');
 
 const hbs = exphbs.create({
     defaultLayout: 'main', 
@@ -38,6 +40,7 @@ app.set('view engine', 'hbs');
 app.set('views', 'views'); // указали папку, где хранятся шаблоны
 
 app.use(express.static(path.join(__dirname, 'public')));
+app.use('/images', express.static(path.join(__dirname, 'images')));
 app.use(express.urlencoded({
     extended: true
 }));
@@ -48,7 +51,7 @@ app.use(session({
     saveUninitialized: false,
     store
 }));
-
+app.use(fileMiddleware.single('avatar')); // это подключение должно быть именно здесь, перед csrf и после сессии; avatar - название поля
 app.use(csrf());
 app.use(flash());
 app.use(varMiddleware);
@@ -60,6 +63,7 @@ app.use('/courses', coursesRoutes);
 app.use('/card', cardRoutes);
 app.use('/orders', ordersRoutes);
 app.use('/auth', authRoutes);
+app.use('/profile', profileRoutes);
 app.use(errorHandler); // важно чтобы это было последним, иначе некоторые роуты могут быть недоступны
 
 const PORT = process.env.PORT || 3000;
