@@ -4,6 +4,7 @@ const csrf = require('csurf');
 const flash = require('connect-flash');
 const express = require('express');
 const app = express();
+const helmet = require('helmet');
 const path = require('path');
 const session = require('express-session');
 const MongoStore = require('connect-mongodb-session')(session);
@@ -54,6 +55,7 @@ app.use(session({
 app.use(fileMiddleware.single('avatar')); // это подключение должно быть именно здесь, перед csrf и после сессии; avatar - название поля
 app.use(csrf());
 app.use(flash());
+app.use(helmet());
 app.use(varMiddleware);
 app.use(userMiddleware);
 
